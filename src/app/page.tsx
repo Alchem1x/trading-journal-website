@@ -1,9 +1,40 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { FaDiscord, FaChartLine, FaLock, FaBrain } from 'react-icons/fa';
 
 export default function Home() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (status === 'authenticated' && session) {
+      router.push('/dashboard');
+    }
+  }, [status, session, router]);
+
+  // Show loading while checking session
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen animated-gradient text-white flex items-center justify-center">
+        <div className="text-2xl">Loading...</div>
+      </div>
+    );
+  }
+
+  // Show dashboard if authenticated (during redirect)
+  if (status === 'authenticated') {
+    return (
+      <div className="min-h-screen animated-gradient text-white flex items-center justify-center">
+        <div className="text-2xl">Redirecting to dashboard...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen animated-gradient text-white">
       {/* Hero Section */}
@@ -69,4 +100,3 @@ export default function Home() {
     </div>
   );
 }
-
