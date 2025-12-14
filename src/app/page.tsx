@@ -1,36 +1,36 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
 import { FaDiscord, FaChartLine, FaLock, FaBrain } from 'react-icons/fa';
 
 export default function Home() {
-  const { data: session, status } = useSession();
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
-  // Redirect to dashboard if already logged in
   useEffect(() => {
-    if (status === 'authenticated' && session) {
-      router.push('/dashboard');
-    }
-  }, [status, session, router]);
+    // Check if user is already logged in
+    fetch('/api/auth/session')
+      .then(res => res.json())
+      .then(data => {
+        if (data.user) {
+          // User is logged in, redirect to dashboard
+          router.push('/dashboard');
+        } else {
+          setLoading(false);
+        }
+      })
+      .catch(() => setLoading(false));
+  }, [router]);
 
-  // Show loading while checking session
-  if (status === 'loading') {
+  const handleLogin = () => {
+    window.location.href = '/api/auth/login';
+  };
+
+  if (loading) {
     return (
       <div className="min-h-screen animated-gradient text-white flex items-center justify-center">
         <div className="text-2xl">Loading...</div>
-      </div>
-    );
-  }
-
-  // Show dashboard if authenticated (during redirect)
-  if (status === 'authenticated') {
-    return (
-      <div className="min-h-screen animated-gradient text-white flex items-center justify-center">
-        <div className="text-2xl">Redirecting to dashboard...</div>
       </div>
     );
   }
@@ -61,7 +61,7 @@ export default function Home() {
 
           {/* Login Button */}
           <button
-            onClick={() => signIn('discord', { callbackUrl: '/dashboard' })}
+            onClick={handleLogin}
             className="group relative inline-flex items-center gap-3 rounded-lg bg-[#5865F2] px-8 py-4 text-lg font-semibold text-white transition-all hover:scale-110 neon-glow-cyan pulse-glow slide-in-up"
           >
             <FaDiscord className="text-2xl" />
