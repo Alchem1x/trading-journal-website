@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
 import { FaChartLine, FaTrophy, FaDollarSign, FaFire, FaCalendarAlt, FaClock, FaPercentage, FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import EquityCurve from '@/components/EquityCurve';
