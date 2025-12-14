@@ -28,17 +28,17 @@ interface Trade {
 }
 
 export default function DashboardPage() {
-    const { data: session } = useSession();
+    const { user, loading: authLoading } = useAuth();
     const [stats, setStats] = useState<UserStats | null>(null);
     const [streak, setStreak] = useState<Streak | null>(null);
     const [trades, setTrades] = useState<Trade[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (session) {
+        if (user && !authLoading) {
             fetchData();
         }
-    }, [session]);
+    }, [user, authLoading]);
 
     const fetchData = async () => {
         try {
@@ -67,7 +67,8 @@ export default function DashboardPage() {
         );
     }
 
-    const user = session?.user as any;
+    // user is already available from useAuth hook
+
 
     // Calculate advanced metrics
     const avgWin = trades.filter(t => t.result === 'Win').reduce((sum, t) => sum + t.pnl, 0) / (stats?.wins || 1);
@@ -103,7 +104,7 @@ export default function DashboardPage() {
             {/* Header */}
             <div className="mb-8 text-center fade-in">
                 <h1 className="text-4xl font-bold neon-text-cyan mb-2">
-                    Welcome back, {user?.username || user?.name}!
+                    Welcome back, {user?.username}!
                 </h1>
                 <p className="text-gray-400 text-lg">Here's your complete trading performance overview</p>
             </div>
