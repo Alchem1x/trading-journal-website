@@ -25,6 +25,7 @@ export const authOptions: NextAuthOptions = {
         async session({ session, token }) {
             // Add Discord user ID to session
             if (session.user) {
+                (session.user as any).id = token.discordId; // Map Discord ID to user.id for database queries
                 (session.user as any).discordId = token.discordId;
                 (session.user as any).username = token.username;
                 (session.user as any).avatar = token.avatar;
