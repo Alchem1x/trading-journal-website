@@ -5,7 +5,7 @@ import { getTradesForDay } from '@/lib/database';
 
 export async function GET(
     request: Request,
-    { params }: { params: { date: string } }
+    { params }: { params: Promise<{ date: string }> }
 ) {
     try {
         const session = await getServerSession(authOptions);
@@ -15,7 +15,8 @@ export async function GET(
         }
 
         const userId = parseInt((session.user as any).id);
-        const trades = getTradesForDay(userId, params.date);
+        const { date } = await params; // Await params in Next.js 15
+        const trades = getTradesForDay(userId, date);
 
         return NextResponse.json({ trades });
     } catch (error) {
